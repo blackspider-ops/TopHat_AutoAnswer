@@ -1,6 +1,21 @@
-# TopHat AutoJoin & AutoAnswer Chrome Extension
+# TopHat AutoJoin & AutoAnswer
 
-A Chrome Manifest V3 extension that automatically joins TopHat classes at scheduled times and answers multiple-choice questions with randomized responses.
+> A Chrome Manifest V3 extension that automatically joins TopHat classes at scheduled times and answers multiple-choice questions with randomized responses.
+
+[![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-blue?logo=google-chrome)](https://github.com/yourusername/tophat-autojoin)
+[![Manifest V3](https://img.shields.io/badge/Manifest-V3-green)](https://developer.chrome.com/docs/extensions/mv3/intro/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+---
+
+## ⚠️ Disclaimer
+
+This extension is for **educational and accessibility purposes only**. Users are responsible for:
+- Following their institution's academic integrity policies
+- Complying with TopHat's terms of service
+- Understanding that automated participation may not reflect actual learning
+
+---
 
 ## Features
 
@@ -202,11 +217,25 @@ For issues or questions:
 3. **Verify TopHat hasn't changed their page structure**
 4. **Test with a simple manual question** first
 
-## Version History
+## 📦 Installation
 
-### v1.0.0
-- Initial release with MV3 support
-- Automatic class joining with chrome.alarms
-- Random multiple-choice question answering
-- Configuration UI with class management
-- Sync storage for cross-device settings
+See [INSTALL.md](INSTALL.md) for detailed installation instructions.
+
+**Quick Start:**
+1. Download or clone this repository
+2. Open Chrome and go to `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked" and select the extension folder
+5. Pin the extension to your toolbar
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📝 Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for version history and changes.
+
+## 📄 License
+
+This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
