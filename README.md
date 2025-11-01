@@ -217,11 +217,15 @@ For issues or questions:
 3. **Verify TopHat hasn't changed their page structure**
 4. **Test with a simple manual question** first
 
+## 🚀 Quick Start
+
+New to the extension? Check out the [Quick Start Guide](QUICK_START.md) to get up and running in 5 minutes!
+
 ## 📦 Installation
 
 See [INSTALL.md](INSTALL.md) for detailed installation instructions.
 
-**Quick Start:**
+**Quick Install:**
 1. Download or clone this repository
 2. Open Chrome and go to `chrome://extensions/`
 3. Enable "Developer mode"
