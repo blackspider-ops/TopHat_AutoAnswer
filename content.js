@@ -483,11 +483,16 @@ class TopHatAutoAnswerer {
       throw new Error('No options available');
     }
     
-    // Select random option
-    const randomIndex = Math.floor(Math.random() * options.length);
-    const selectedOption = options[randomIndex];
+    // Limit to first 4 options only (ignore 5th option and beyond)
+    const limitedOptions = options.slice(0, 4);
     
-    log(`Selecting option ${randomIndex + 1} of ${options.length}`, selectedOption);
+    log(`Found ${options.length} total options, limiting to first ${limitedOptions.length}`);
+    
+    // Select random option from the limited set
+    const randomIndex = Math.floor(Math.random() * limitedOptions.length);
+    const selectedOption = limitedOptions[randomIndex];
+    
+    log(`Selecting option ${randomIndex + 1} of ${limitedOptions.length} (from ${options.length} total)`, selectedOption);
     
     // Try multiple ways to click the option
     try {

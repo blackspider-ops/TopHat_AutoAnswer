@@ -2,6 +2,11 @@
 
 All notable changes to the TopHat AutoJoin & AutoAnswer extension will be documented in this file.
 
+## [1.0.1] - 2024-11-05
+
+### Changed
+- Limited answer selection to first 4 options only (ignores 5th option and beyond)
+
 ## [1.0.0] - 2024-11-01
 
 ### Initial Release

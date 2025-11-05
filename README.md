@@ -27,7 +27,8 @@ This extension is for **educational and accessibility purposes only**. Users are
 
 ### 🤖 Intelligent Auto-Answering
 - Monitors TopHat pages for new multiple-choice questions
-- Randomly selects and submits answers with realistic delays (1-4 seconds)
+- Randomly selects from the first 4 options only (ignores 5th option if present)
+- Realistic delays (1-4 seconds) between actions
 - Prevents double-answering the same question
 - Works with polls and multiple-choice question types
 
