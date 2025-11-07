@@ -2,6 +2,15 @@
 
 All notable changes to the TopHat AutoJoin & AutoAnswer extension will be documented in this file.
 
+## [1.0.2] - 2024-11-05
+
+### Added
+- Support for "Unanswered" status text (Classroom tab)
+- Now works in both Content and Classroom tabs
+
+### Changed
+- Improved question detection to handle different TopHat layouts
+
 ## [1.0.1] - 2024-11-05
 
 ### Changed

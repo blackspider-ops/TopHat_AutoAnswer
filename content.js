@@ -131,21 +131,22 @@ class TopHatAutoAnswerer {
     
     log('Checking for active questions...');
     
-    // Simple approach: Find "Not answered" text in the sidebar
+    // Simple approach: Find "Not answered" or "Unanswered" text in the sidebar
     const allElements = document.querySelectorAll('*');
     let notAnsweredElement = null;
     
     for (const element of allElements) {
       const text = element.textContent.trim();
-      if (text === 'Not answered') {
+      // Check for both "Not answered" (Content tab) and "Unanswered" (Classroom tab)
+      if (text === 'Not answered' || text === 'Unanswered') {
         notAnsweredElement = element;
-        log('Found "Not answered" element:', element);
+        log(`Found "${text}" element:`, element);
         break;
       }
     }
     
     if (!notAnsweredElement) {
-      log('No "Not answered" text found - all questions may be answered');
+      log('No "Not answered" or "Unanswered" text found - all questions may be answered');
       return;
     }
     
