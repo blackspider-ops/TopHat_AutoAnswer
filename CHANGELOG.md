@@ -2,7 +2,7 @@
 
 All notable changes to the TopHat AutoJoin & AutoAnswer extension will be documented in this file.
 
-## [1.0.3] - 2024-11-05
+## [1.0.3] - 2024-11-13
 
 ### Added
 - Multiple retry attempts after answering (checks 3 times over 13 seconds)

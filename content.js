@@ -46,10 +46,10 @@ class TopHatAutoAnswerer {
         this.checkForActiveQuestions();
       }, 2000); // Wait longer for page to fully load
       
-      // Check periodically for new questions (every 5 seconds)
+      // Check periodically for new questions (every 3 seconds)
       this.periodicCheck = setInterval(() => {
         this.checkForActiveQuestions();
-      }, 5000);
+      }, 3000);
     } else {
       log('Auto-answering is DISABLED for this class');
     }
@@ -158,7 +158,7 @@ class TopHatAutoAnswerer {
       
       // If we haven't found questions for a while, clear the answered set
       // This helps if the page refreshed or new questions appeared
-      if (consecutiveNoQuestionCount > 6) { // 6 checks * 5 seconds = 30 seconds
+      if (consecutiveNoQuestionCount > 10) { // 10 checks * 3 seconds = 30 seconds
         log('Clearing answered questions cache after 30 seconds of no questions');
         answeredQuestions.clear();
         consecutiveNoQuestionCount = 0;
