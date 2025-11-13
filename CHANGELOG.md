@@ -2,6 +2,20 @@
 
 All notable changes to the TopHat AutoJoin & AutoAnswer extension will be documented in this file.
 
+## [1.0.3] - 2024-11-05
+
+### Added
+- Multiple retry attempts after answering (checks 3 times over 13 seconds)
+- Important event logging (always visible in console)
+- Auto-clear answered questions cache after 30 seconds of inactivity
+
+### Changed
+- Increased wait time between questions (3s → 3s, 5s, 5s)
+- Better progress tracking to ensure all questions are answered
+
+### Fixed
+- Issue where second question might not be detected after answering first
+
 ## [1.0.2] - 2024-11-05
 
 ### Added

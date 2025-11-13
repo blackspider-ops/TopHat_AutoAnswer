@@ -2,11 +2,18 @@
 
 const DEBUG = false;
 const answeredQuestions = new Set();
+let lastCheckTime = 0;
+let consecutiveNoQuestionCount = 0;
 
 function log(...args) {
   if (DEBUG) {
     console.log('[TopHat Content]', ...args);
   }
+}
+
+// Always log important events
+function logImportant(...args) {
+  console.log('[TopHat Content]', ...args);
 }
 
 // Question selectors - updated to match TopHat's actual DOM structure
@@ -147,8 +154,21 @@ class TopHatAutoAnswerer {
     
     if (!notAnsweredElement) {
       log('No "Not answered" or "Unanswered" text found - all questions may be answered');
+      consecutiveNoQuestionCount++;
+      
+      // If we haven't found questions for a while, clear the answered set
+      // This helps if the page refreshed or new questions appeared
+      if (consecutiveNoQuestionCount > 6) { // 6 checks * 5 seconds = 30 seconds
+        log('Clearing answered questions cache after 30 seconds of no questions');
+        answeredQuestions.clear();
+        consecutiveNoQuestionCount = 0;
+      }
       return;
     }
+    
+    // Reset counter when we find a question
+    consecutiveNoQuestionCount = 0;
+    logImportant(`Found unanswered question! Attempting to answer...`);
     
     // Find the clickable parent - look for the question item container
     // Try multiple parent levels to find the clickable element
@@ -228,7 +248,7 @@ class TopHatAutoAnswerer {
       
       // Question is unanswered if it has enabled options but none are checked
       if (!hasChecked && hasEnabled) {
-        log(`Found unanswered question group: ${groupName} - answering now!`);
+        logImportant(`Found unanswered question group: ${groupName} with ${enabledRadios.length} options - answering now!`);
         const container = this.findQuestionContainer(radios[0]);
         this.handleQuestion(container, enabledRadios);
         return;
@@ -411,11 +431,21 @@ class TopHatAutoAnswerer {
       // Find and click a random option
       await this.selectRandomOption(container, radios);
       
-      log(`Successfully answered question: ${questionId}`);
+      logImportant(`✓ Successfully answered question: ${questionId}`);
       
-      // Wait a bit after answering, then check for next question
-      await this.sleep(2000);
-      log('Checking for next question...');
+      // Wait a bit after answering, then check for next question multiple times
+      await this.sleep(3000); // Wait longer for page to update
+      logImportant('→ Checking for next question (attempt 1/3)...');
+      this.checkForActiveQuestions();
+      
+      // Check again after a longer delay in case questions load slowly
+      await this.sleep(5000);
+      logImportant('→ Checking for next question (attempt 2/3)...');
+      this.checkForActiveQuestions();
+      
+      // One more check after even longer delay
+      await this.sleep(5000);
+      logImportant('→ Checking for next question (attempt 3/3)...');
       this.checkForActiveQuestions();
       
     } catch (error) {
