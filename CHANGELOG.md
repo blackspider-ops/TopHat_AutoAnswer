@@ -2,7 +2,7 @@
 
 All notable changes to the TopHat AutoJoin & AutoAnswer extension will be documented in this file.
 
-## [1.0.4] - 2024-11-13
+## [1.0.4] - 2024-11-18
 
 ### Fixed
 - Improved click logic to navigate to unanswered questions
@@ -26,7 +26,7 @@ All notable changes to the TopHat AutoJoin & AutoAnswer extension will be docume
 ### Fixed
 - Issue where second question might not be detected after answering first
 
-## [1.0.2] - 2024-11-05
+## [1.0.2] - 2024-11-11
 
 ### Added
 - Support for "Unanswered" status text (Classroom tab)

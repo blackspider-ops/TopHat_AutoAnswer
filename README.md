@@ -17,6 +17,22 @@ This extension is for **educational and accessibility purposes only**. Users are
 
 ---
 
+## 🎯 Quick Overview
+
+**Current Version:** v1.0.4 (Fully Automatic)
+
+This extension automatically:
+1. ⏰ Opens TopHat at your scheduled class times
+2. 🔍 Finds unanswered questions in the sidebar
+3. 🖱️ Clicks on them to reveal the question
+4. 🎲 Randomly selects an answer (from first 4 options)
+5. ✅ Submits and moves to the next question
+6. 🔄 Repeats until all questions are answered
+
+**No manual clicking required!** Just set your schedule and let it run.
+
+---
+
 ## Features
 
 ### 🕒 Automatic Class Joining
@@ -110,12 +126,18 @@ You can create simple icons or use placeholder images for development.
 - Automatically handles daylight saving time changes
 - Alarms persist even when Chrome is closed
 
-### Auto-Answering Logic
+### Auto-Answering Logic (v1.0.4)
+- **Automatic Navigation**: Finds and clicks on unanswered questions in sidebar
+- **Smart Detection**: Detects both "Not answered" (Content tab) and "Unanswered" (Classroom tab)
+- **Multiple Click Methods**: Uses 7 different event types for reliable clicking
+- **Question Verification**: Checks every 300ms to confirm question appeared
 - **DOM Monitoring**: Uses MutationObserver to detect new questions
-- **Question Detection**: Looks for common TopHat question container selectors
+- **Periodic Checks**: Scans for new questions every 3 seconds
+- **Multiple Retries**: Checks 3 times over 13 seconds after answering
 - **Smart Delays**: Randomized 1-4 second delays to appear more natural
-- **Answer Selection**: Randomly chooses from available multiple-choice options
+- **Answer Selection**: Randomly chooses from first 4 options only (ignores 5th+)
 - **Duplicate Prevention**: Tracks answered questions to avoid double-submission
+- **Auto-Clear Cache**: Clears answered questions after 30 seconds of inactivity
 
 ### Content Script Selectors
 The extension looks for these DOM elements (may need adjustment for TopHat updates):
@@ -143,22 +165,47 @@ The extension requires these permissions:
 
 ### Classes Not Opening Automatically
 1. **Check alarm status** in the popup - should show "Next Alarm" time
-2. **Verify class is enabled** (green toggle in settings)
+2. **Verify class is enabled** (toggle is blue/on in settings)
 3. **Confirm correct URL** format in class settings
-4. **Check Chrome notifications** are enabled for the extension
+4. **Ensure Chrome is running** - alarms only trigger when Chrome is open
 
 ### Auto-Answering Not Working
-1. **Enable debug mode** by setting `DEBUG = true` in `content.js`
-2. **Open browser console** (F12) on TopHat page
-3. **Look for extension logs** starting with `[TopHat Content]`
-4. **Verify you're logged into TopHat** and can see questions manually
-5. **Check if question selectors** match TopHat's current DOM structure
+1. **Check console logs** (F12) - look for `[TopHat Content]` messages
+2. **Verify you're logged into TopHat** and can see questions manually
+3. **Confirm class is enabled** in extension popup
+4. **Check URL matches** - extension only works on configured class URLs
+5. **Look for these logs:**
+   - ✅ `Found unanswered question! Attempting to answer...`
+   - ✅ `✓ Question appeared! Found X radio buttons`
+   - ✅ `✓ Successfully answered question`
+   - ❌ If you see `✗ Question did not appear`, send console logs for debugging
+
+### Questions Not Being Clicked
+**v1.0.4 fixed this!** The extension now:
+- Finds question container using `.closest()`
+- Dispatches 7 different click event types
+- Checks every 300ms if question appeared
+- Tries 8 fallback methods if first click fails
+
+If still not working:
+1. **Open console** (F12) and look for click logs
+2. **Check for:** `Found question container: [element]`
+3. **Send console logs** if you see `All click attempts failed`
 
 ### General Issues
 1. **Reload the extension** from `chrome://extensions/`
-2. **Check for Chrome updates** - MV3 features require recent versions
+2. **Check for Chrome updates** - MV3 features require Chrome 88+
 3. **Verify permissions** are granted in extension details
 4. **Clear extension storage** and reconfigure if needed
+
+### Common Error Messages
+
+| Log Message | Meaning | Solution |
+|-------------|---------|----------|
+| `No "Not answered" or "Unanswered" text found` | All questions answered or none visible | Wait for new questions |
+| `✗ Question did not appear after 10 attempts` | Click didn't reveal question | Check console for click errors |
+| `All click attempts failed` | Cannot click sidebar item | Report issue with console logs |
+| `Found X radio buttons` | ✅ Working correctly | No action needed |
 
 ## Development
 
@@ -202,10 +249,33 @@ const QUESTION_SELECTORS = {
 
 ## Limitations
 
-- **Multiple Choice Only**: Only handles radio buttons, checkboxes, and clickable options
+- **Multiple Choice Only**: Only handles radio buttons (A, B, C, D options)
+- **First 4 Options**: Selects only from first 4 options, ignores 5th and beyond
 - **Login Required**: User must be logged into TopHat; extension won't handle authentication
+- **Chrome Must Be Running**: Alarms only trigger when Chrome is open
 - **DOM Dependent**: May break if TopHat significantly changes their page structure
 - **Chrome Only**: Designed for Chromium-based browsers (Chrome, Edge, etc.)
+
+## What's New in v1.0.4
+
+### ✨ Major Improvements
+- **Automatic Navigation**: Extension now clicks on unanswered questions automatically
+- **No Manual Clicking**: Fully hands-free operation
+- **Better Click Detection**: Uses 7 different event types for reliability
+- **Question Verification**: Confirms question appeared before answering
+- **Faster Detection**: Checks every 3 seconds (was 5 seconds)
+- **Multiple Retries**: 3 attempts over 13 seconds after answering
+
+### 🐛 Bug Fixes
+- Fixed issue where extension found questions but didn't navigate to them
+- Fixed container detection for Classroom tab questions
+- Improved click reliability with multiple fallback methods
+
+### 📊 Performance
+- Checks for questions every 3 seconds
+- Answers questions within 3-5 seconds each
+- Handles multiple questions automatically
+- No manual intervention required
 
 ## Legal & Ethical Considerations
 
