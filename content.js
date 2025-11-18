@@ -170,45 +170,154 @@ class TopHatAutoAnswerer {
     consecutiveNoQuestionCount = 0;
     logImportant(`Found unanswered question! Attempting to answer...`);
     
-    // Find the clickable parent - look for the question item container
-    // Try multiple parent levels to find the clickable element
+    // First, try to find the question item container in the sidebar
+    // Look for common patterns in Classroom tab
+    const questionContainer = notAnsweredElement.closest('[class*="Question"], [class*="question"], [class*="item"], li, article, [role="listitem"]');
+    
+    if (questionContainer) {
+      logImportant(`Found question container: ${questionContainer.tagName} class="${questionContainer.className}"`);
+      
+      // Try clicking the container directly
+      try {
+        // Dispatch all possible click events
+        ['mousedown', 'mouseup', 'click', 'pointerdown', 'pointerup', 'touchstart', 'touchend'].forEach(eventType => {
+          const event = new MouseEvent(eventType, { 
+            bubbles: true, 
+            cancelable: true,
+            view: window,
+            detail: 1
+          });
+          questionContainer.dispatchEvent(event);
+        });
+        
+        questionContainer.click();
+        
+        logImportant('Clicked question container, waiting for question to appear...');
+        
+        // Wait and check if question appeared
+        let checkAttempts = 0;
+        const checkInterval = setInterval(() => {
+          checkAttempts++;
+          const radios = document.querySelectorAll('input[type="radio"]:not([disabled])');
+          
+          if (radios.length > 0) {
+            logImportant(`✓ Question appeared! Found ${radios.length} radio buttons`);
+            clearInterval(checkInterval);
+            this.answerCurrentQuestion();
+          } else if (checkAttempts >= 10) {
+            logImportant(`✗ Question did not appear after ${checkAttempts} attempts (3 seconds)`);
+            clearInterval(checkInterval);
+          }
+        }, 300);
+        
+        return;
+      } catch (e) {
+        log('Container click failed:', e);
+      }
+    }
+    
+    // Fallback: Try walking up the DOM tree
     let clickTarget = notAnsweredElement;
     let attempts = 0;
-    const maxAttempts = 10;
+    const maxAttempts = 15;
     
     while (clickTarget && attempts < maxAttempts) {
       // Check if this element or its siblings contain "Question" text
       const hasQuestionText = clickTarget.textContent.includes('Question');
       
       // Try to find a clickable element at this level
-      const clickable = clickTarget.tagName === 'A' || 
-                       clickTarget.tagName === 'BUTTON' ||
-                       clickTarget.getAttribute('role') === 'button' ||
-                       clickTarget.onclick ||
-                       hasQuestionText;
+      const isClickable = clickTarget.tagName === 'A' || 
+                         clickTarget.tagName === 'BUTTON' ||
+                         clickTarget.getAttribute('role') === 'button' ||
+                         clickTarget.onclick ||
+                         clickTarget.style.cursor === 'pointer';
       
-      if (clickable && hasQuestionText) {
-        log('Found clickable question container, clicking it');
-        clickTarget.click();
+      // Try clicking if it has Question text OR if it's clickable
+      if ((isClickable || hasQuestionText) && clickTarget !== document.body) {
+        logImportant(`Attempting to click element: ${clickTarget.tagName} (clickable=${isClickable}, hasQuestion=${hasQuestionText})`);
         
-        // Wait for the question to load, then find and answer it
-        setTimeout(() => {
-          this.answerCurrentQuestion();
-        }, 1500);
-        return;
+        try {
+          // Try multiple click methods
+          clickTarget.click();
+          
+          // Also dispatch mouse events
+          ['mousedown', 'mouseup', 'click'].forEach(eventType => {
+            const event = new MouseEvent(eventType, { bubbles: true, cancelable: true, view: window });
+            clickTarget.dispatchEvent(event);
+          });
+          
+          log('Click events dispatched, waiting for question to appear...');
+          
+          // Wait and check multiple times if question appeared
+          let checkAttempts = 0;
+          const checkInterval = setInterval(() => {
+            checkAttempts++;
+            const radios = document.querySelectorAll('input[type="radio"]:not([disabled])');
+            
+            if (radios.length > 0) {
+              logImportant(`Question appeared! Found ${radios.length} radio buttons`);
+              clearInterval(checkInterval);
+              this.answerCurrentQuestion();
+            } else if (checkAttempts >= 10) {
+              logImportant(`Question did not appear after ${checkAttempts} attempts`);
+              clearInterval(checkInterval);
+            }
+          }, 300);
+          
+          return;
+        } catch (e) {
+          log('Click failed, trying parent:', e);
+        }
       }
       
       clickTarget = clickTarget.parentElement;
       attempts++;
     }
     
-    // Fallback: just click the "Not answered" element itself
-    log('Clicking "Not answered" element directly');
-    notAnsweredElement.click();
+    // Fallback: try clicking the "Not answered" element and all its parents
+    logImportant('Fallback: Clicking "Not answered" element and parents');
+    let fallbackTarget = notAnsweredElement;
+    for (let i = 0; i < 8; i++) {
+      if (!fallbackTarget) break;
+      
+      try {
+        logImportant(`Fallback click attempt ${i + 1}: ${fallbackTarget.tagName} class="${fallbackTarget.className}"`);
+        
+        // Try multiple click methods
+        fallbackTarget.click();
+        
+        // Dispatch all mouse events
+        ['mousedown', 'mouseup', 'click', 'pointerdown', 'pointerup'].forEach(eventType => {
+          const event = new MouseEvent(eventType, { 
+            bubbles: true, 
+            cancelable: true,
+            view: window 
+          });
+          fallbackTarget.dispatchEvent(event);
+        });
+        
+        // Wait and check if question appeared
+        setTimeout(() => {
+          const radios = document.querySelectorAll('input[type="radio"]');
+          if (radios.length > 0) {
+            logImportant(`Fallback click ${i + 1} worked! Found ${radios.length} radio buttons`);
+            this.answerCurrentQuestion();
+          } else if (i === 7) {
+            logImportant('All fallback clicks failed, trying to answer anyway');
+            this.answerCurrentQuestion();
+          }
+        }, 1000);
+        
+        return;
+      } catch (e) {
+        log(`Fallback click ${i + 1} failed:`, e);
+        fallbackTarget = fallbackTarget.parentElement;
+      }
+    }
     
-    setTimeout(() => {
-      this.answerCurrentQuestion();
-    }, 1500);
+    // Absolute last resort: just try to answer on current page
+    logImportant('All click attempts failed, attempting to answer visible questions');
+    this.answerCurrentQuestion();
   }
   
   answerCurrentQuestion() {

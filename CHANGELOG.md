@@ -2,6 +2,16 @@
 
 All notable changes to the TopHat AutoJoin & AutoAnswer extension will be documented in this file.
 
+## [1.0.4] - 2024-11-13
+
+### Fixed
+- Improved click logic to navigate to unanswered questions
+- Added multiple click methods (click() + mouse events)
+- Added multiple fallback click attempts (tries 5 different parent elements)
+- Added direct URL navigation as fallback if clicks fail
+- Better logging to show which element is being clicked
+- Fixed issue where extension found questions but didn't navigate to them
+
 ## [1.0.3] - 2024-11-13
 
 ### Added
